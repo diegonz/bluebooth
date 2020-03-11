@@ -1,0 +1,14 @@
+.idea
+*.iml
+out
+gen
+.vscode/*
+
+__pycache__/
+*.py[cod]
+*$py.class
+
+.venv
+venv/
+.env
+env/

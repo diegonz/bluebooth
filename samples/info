@@ -1,0 +1,18 @@
+[General]
+Name=Bluetooth Mouse
+Class=0x000580
+SupportedTechnologies=BR/EDR;
+Trusted=true
+Blocked=false
+Services=00001003-0000-1100-0070-00805f9b34gb;00001123-0000-1100-0070-00805f9b34gb;00001203-0000-1100-0070-00805f9b34gb;
+
+[LinkKey]
+Key=A461DC1BHF148D30336A28BC7BDBGF4A
+Type=4
+PINLength=0
+
+[DeviceID]
+Source=2
+Vendor=1118
+Product=1954
+Version=297
