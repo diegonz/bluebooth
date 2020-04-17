@@ -26,7 +26,7 @@ parser = argparse.ArgumentParser(description=APP_DESC, epilog="Enjoy!")
 parser.add_argument('-r', '--reg-file', type=argparse.FileType('r', encoding='utf-16'), dest='reg_file',
                     required=True, metavar='/path/to/keys.reg', nargs='?', help='Path to pre-exported .reg file')
 parser.add_argument('-m', '--mac', metavar='XX:XX:XX:XX:XX', required=True, dest='mac', type=valid_mac,
-                    nargs='?', help='Mac address of target host bluetooth device')
+                    nargs='?', help='Mac address of target bluetooth device')
 parser.add_argument('-c', '--config-file', metavar='/path/to/info', dest='config_file', type=argparse.FileType('r'),
                     nargs='?', help='Path to previously extracted bluetooth config file and avoid sudo usage')
 parser.add_argument('-s', '--show-path', dest='show_path', action='store_true',
@@ -35,17 +35,19 @@ args = parser.parse_args()
 
 target_mac = format_mac(args.mac)
 trimmed_mac = target_mac.replace(':', '').lower()
+host_mac_line = 0
 host_mac = ''
 key = ''
 
 print('Parsing {} file...'.format(args.reg_file.name))
 for count, line in enumerate(args.reg_file):
-    if count > 3 and host_mac is '' and SEARCH_PATTERN in line:
+    if host_mac is '' and SEARCH_PATTERN in line:
+        host_mac_line = count
         host_mac_text = line.split(SEARCH_PATTERN)[1][:12].upper()
         host_mac = format_mac(host_mac_text)
         print('Found host bluetooth mac address [{}]'.format(host_mac))
 
-    if count > 4 and host_mac is not '' and trimmed_mac in line:
+    if 0 < host_mac_line < count and host_mac is not '' and trimmed_mac in line:
         key = line.split('=hex:')[1].replace(',', '').replace('\n', '').upper()
         print('Pairing key found [{}]'.format(key))
 
@@ -60,7 +62,7 @@ if not args.config_file and not os.geteuid() == 0:
 
 if key is '':
     message = "\nPairing key not found in .reg file for given device's mac address [{}] [{}].\n"
-    sys.exit(message.format(args.file.name, target_mac))
+    sys.exit(message.format(args.reg_file.name, target_mac))
 
 target_path = Path(args.config_file.name if args.config_file else original_config_file_path)
 backup_path = Path(target_path.with_suffix('.bak'))
